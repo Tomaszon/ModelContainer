@@ -30,9 +30,9 @@ namespace ESAWriter.Models
 
 		public int B { get { return Get<int>(p => p * 2, nameof(Model.A)); } }
 
-		public int C { get { return Get<int, int>(s=> s, nameof(Model.A)); } set { Set(value); } }
+		public int C { get { return Get<int, int>(s => s, nameof(Model.A)); } set { Set(value); } }
 
-		public int D { get { return Get<int>(); } set { Set(value); } }
+		public string D { get { return Get<string>(nameof(Model.A)); } set { Set(value); } }
 
 		public ViewModel(TModel model) : base(model) { }
 	}
@@ -76,14 +76,29 @@ namespace ESAWriter.Models
 			_formatDictionary.Modify(key, newValue);
 		}
 
-		protected void Set(object value, [CallerMemberName]string accessorName = null)
+		/// <summary>
+		/// Sets the value of the corresponding variable of the underlying model.
+		/// </summary>
+		/// <param name="value">New value.</param>
+		/// <param name="accessorName">Do NOT modify this parameter! The [CallerMemberName] attribute will handle this.</param>
+		protected void Set(object value, [CallerMemberName] string accessorName = "accessorName")
 		{
 			PropertyInfo pi = _accessors[accessorName];
 
 			pi.SetValue(_model, value);
 		}
 
-		protected TOut Get<TOut, TStored>(Func<TStored, TOut> transform, [CallerMemberName] string propertyName = null, [CallerMemberName] string accessorName = null)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <typeparam name="TOut">Type of the view model accessor wich given to the view.</typeparam>
+		/// <typeparam name="TStored">Type of the variable of the underlying model.</typeparam>
+		/// <param name="transform"></param>
+		/// <param name="propertyName"></param>
+		/// <param name="accessorName"></param>
+		/// <exception cref="InvalidCastException">Throws InvalidCastException if no implicit conversion found between TSource and TOut types.</exception>
+		/// <returns></returns>
+		protected TOut Get<TOut, TStored>(Func<TStored, TOut> transform, [CallerMemberName] string propertyName = null, [CallerMemberName] string accessorName = "accessorName")
 		{
 			PropertyInfo pi = _modelProperties[propertyName];
 			_accessors.Add(accessorName, pi);
@@ -91,12 +106,12 @@ namespace ESAWriter.Models
 			return transform is null ? (TOut)_accessors[accessorName].GetValue(_model) : transform.Invoke((TStored)_accessors[accessorName].GetValue(_model));
 		}
 
-		protected T Get<T>(Func<T, T> transform, [CallerMemberName] string propertyName = null, [CallerMemberName] string accessorName = null)
+		protected T Get<T>(Func<T, T> transform, [CallerMemberName] string propertyName = null, [CallerMemberName] string accessorName = "accessorName")
 		{
 			return Get<T, T>(transform, propertyName, accessorName);
 		}
 
-		protected T Get<T>([CallerMemberName] string propertyName = null, [CallerMemberName] string accessorName = null)
+		protected T Get<T>([CallerMemberName] string propertyName = null, [CallerMemberName] string accessorName = "accessorName")
 		{
 			return Get<T>(p => p, propertyName, accessorName);
 		}
@@ -128,7 +143,6 @@ namespace ESAWriter.Models
 	{
 		public int A { get { return Get<int>(); } set { Set(value); } }
 
-
 		public int B { get { return Get<int>(); } set { Set(value); } }
 	}
 
@@ -136,7 +150,12 @@ namespace ESAWriter.Models
 	{
 		private readonly Dictionary<string, object> _vars = new Dictionary<string, object>();
 
-		protected void Set(object value, [CallerMemberName]string name = null)
+		/// <summary>
+		/// Sets the value of the corresponding variable.
+		/// </summary>
+		/// <param name="value">New value</param>
+		/// <param name="name">Do NOT modify this parameter! The [CallerMemberName] attribute will handle this.</param>
+		protected void Set(object value, [CallerMemberName] string name = "propertyName")
 		{
 			if (_vars.ContainsKey(name))
 			{
@@ -148,11 +167,18 @@ namespace ESAWriter.Models
 			OnPropertyChanged(name);
 		}
 
-		protected T Get<T>([CallerMemberName] string name = null)
+		/// <summary>
+		/// Returns the value of the corresponding variable.
+		/// </summary>
+		/// <typeparam name="T">Type of the variable.</typeparam>
+		/// <param name="defaultValue">Default value.</param>
+		/// <param name="name">Do NOT modify this parameter! The [CallerMemberName] attribute will handle this.</param>
+		/// <returns></returns>
+		protected T Get<T>(T defaultValue = default, [CallerMemberName] string name = "propertyName")
 		{
 			if (!_vars.ContainsKey(name))
 			{
-				_vars.Add(name, default(T));
+				_vars.Add(name, defaultValue);
 			}
 
 			return (T)_vars[name];
