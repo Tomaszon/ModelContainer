@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
+﻿using ModelContainer;
 using System.Runtime.CompilerServices;
 
 namespace ESAWriter.Models
@@ -7,9 +6,9 @@ namespace ESAWriter.Models
 	/// <summary>
 	/// Base class for model classes to inherit from./>
 	/// </summary>
-	public class ModelBase : INotifyPropertyChanged
+	public class ModelBase : InitableBase
 	{
-		private readonly Dictionary<string, object> _vars = new Dictionary<string, object>();
+		private readonly ModelVariableDictionary _vars = new ModelVariableDictionary();
 
 		/// <summary>
 		/// Sets the value of the corresponding variable.
@@ -18,12 +17,7 @@ namespace ESAWriter.Models
 		/// <param name="name">Do NOT modify this parameter! The [CallerMemberName] attribute will handle this.</param>
 		protected void Set(object value, [CallerMemberName] string name = "propertyName")
 		{
-			if (_vars.ContainsKey(name))
-			{
-				_vars.Remove(name);
-			}
-
-			_vars.Add(name, value);
+			_vars.Get(name).Value = value;
 
 			OnPropertyChanged(name);
 		}
@@ -37,21 +31,17 @@ namespace ESAWriter.Models
 		/// <returns>Returns the value of the corresponding variable.</returns>
 		protected T Get<T>(T defaultValue = default, [CallerMemberName] string name = "propertyName")
 		{
-			if (!_vars.ContainsKey(name))
+			if (_vars.Get(name) is var var && var is null)
 			{
-				_vars.Add(name, defaultValue);
+				_vars.Add(name, defaultValue, defaultValue);
 			}
 
 			return (T)_vars[name];
 		}
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		protected void OnPropertyChanged([CallerMemberName]string name = null)
+		public T GetDefaultValue<T>(string name)
 		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+			return (T)_vars.Get(name).DefaultValue;
 		}
 	}
 }
-
-

@@ -17,14 +17,6 @@ namespace ESAWriter.Models
 			}
 		}
 
-		public List<string> this[PropertyInfo propertyInfo]
-		{
-			get
-			{
-				return Get(propertyInfo)?.Key;
-			}
-		}
-
 		public ListKeyValuePair Get(string key)
 		{
 			return _dic.FirstOrDefault(p => p.Key.Contains(key));
@@ -60,5 +52,3 @@ namespace ESAWriter.Models
 		}
 	}
 }
-
-

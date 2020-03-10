@@ -104,5 +104,3 @@ namespace ESAWriter.Models
 		}
 	}
 }
-
-

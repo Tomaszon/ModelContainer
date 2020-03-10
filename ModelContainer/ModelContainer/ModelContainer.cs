@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ModelContainer;
+using System;
 using System.ComponentModel;
 
 namespace ESAWriter.Models
@@ -8,7 +9,7 @@ namespace ESAWriter.Models
 	/// </summary>
 	/// <typeparam name="TViewModel">Type of the viewmodel</typeparam>
 	/// <typeparam name="TModel">Type of the model.</typeparam>
-	public class ModelContainer<TViewModel, TModel> where TModel : class, INotifyPropertyChanged, new() where TViewModel : class, IViewModelInit
+	public class ModelContainer<TViewModel, TModel> where TModel : InitableBase, INotifyPropertyChanged, new() where TViewModel : InitableBase
 	{
 		/// <summary>
 		/// The transformed model.
@@ -31,7 +32,9 @@ namespace ESAWriter.Models
 
 			ViewModel = viewModel ?? (TViewModel)Activator.CreateInstance(typeof(TViewModel), Model);
 
-			ViewModel.InitAccessors();
+			ViewModel.Init();
+
+			Model.Init();
 		}
 
 		public void ChangeModel(TModel newModel)
@@ -45,5 +48,3 @@ namespace ESAWriter.Models
 		}
 	}
 }
-
-
