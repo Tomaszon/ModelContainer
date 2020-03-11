@@ -1,8 +1,7 @@
-﻿using ModelContainer;
-using System;
+﻿using System;
 using System.ComponentModel;
 
-namespace ESAWriter.Models
+namespace ModelContainer
 {
 	/// <summary>
 	/// Wrapper class for model viewmodel classes.

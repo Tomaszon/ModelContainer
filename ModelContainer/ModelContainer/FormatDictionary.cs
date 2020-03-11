@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ESAWriter.Models
+namespace ModelContainer
 {
 	public class FormatDictionary
 	{
