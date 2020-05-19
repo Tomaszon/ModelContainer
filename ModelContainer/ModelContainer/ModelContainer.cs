@@ -36,6 +36,16 @@ namespace ModelContainer
 			Model.Init();
 		}
 
+		public void RefreshView(string accessorName)
+		{
+			ViewModel.Refresh(accessorName);
+		}
+
+		public void RefreshViewModel(string propertyName)
+		{
+			Model.Refresh(propertyName);
+		}
+
 		public void ChangeModel(TModel newModel)
 		{
 			//TODO
