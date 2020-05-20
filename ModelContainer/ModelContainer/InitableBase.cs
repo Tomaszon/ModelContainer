@@ -17,10 +17,5 @@ namespace ModelContainer
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 		}
-
-		public void Refresh(string fieldName)
-		{
-			OnPropertyChanged(fieldName);
-		}
 	}
 }

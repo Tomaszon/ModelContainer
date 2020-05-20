@@ -36,24 +36,30 @@ namespace ModelContainer
 			Model.Init();
 		}
 
-		public void RefreshView(string accessorName)
-		{
-			ViewModel.Refresh(accessorName);
-		}
-
-		public void RefreshViewModel(string propertyName)
-		{
-			Model.Refresh(propertyName);
-		}
-
+		/// <summary>
+		/// Sets the model to the given instance, creates a new ViewModel and calls the init methods.
+		/// </summary>
+		/// <param name="newModel">New model instance.</param>
 		public void ChangeModel(TModel newModel)
 		{
-			//TODO
+			Model = newModel;
+			
+			ViewModel = (TViewModel)Activator.CreateInstance(typeof(TViewModel), Model);
+			
+			ViewModel.Init();
+
+			Model.Init();
 		}
 
+		/// <summary>
+		/// Sets the view model to the given instance, calls the init method.
+		/// </summary>
+		/// <param name="newViewModel">New view model instance.</param>
 		public void ChangeViewModel(TViewModel newViewModel)
 		{
-			//TODO
+			ViewModel = newViewModel;
+
+			ViewModel.Init();
 		}
 	}
 }
